@@ -1,0 +1,5 @@
+MAX_SEQ_LENGTH = 200
+LSTM_UNITS = 128
+N_LAYERS = 2
+NUM_CLASSES = 2
+input_shape = (1,200)

@@ -1,60 +1,34 @@
-from flask import Flask, render_template, request
 import numpy as np
-from joblib import load
-import pandas as pd
-import plotly.express as px
-import plotly.graph_objects as go
-import uuid
-import os
-
+import warnings
+from utils import predict, load_model
+from flask import Flask,jsonify,request,render_template,redirect, url_for
+from model import SentimentAnalysisModel
+warnings.filterwarnings("ignore")
+import tensorflow as tf
 app = Flask(__name__)
-
-@app.route('/', methods=['GET', 'POST'])
-def hello_world():
-    request_type_str = request.method
-    if request_type_str == 'GET':
-        return render_template('index.html', href='static/base_pic.svg')
-    else:
-        text = request.form['text']
-        random_string = uuid.uuid4().hex
-        path = "app/static/" + random_string + ".svg"
-        files = [f for f in os.listdir('.') if os.path.isfile(f)]
-        for f in files:
-          print(f)
-        model = load('app/model.joblib')
-        np_arr = floats_string_to_np_arr(text)
-        make_picture('app/AgesAndHeights.pkl', model, np_arr, path)
-
-        return render_template('index.html', href=path[4:])
+global model 
 
 
-def make_picture(training_data_filename, model, new_inp_np_arr, output_file):
-  data = pd.read_pickle(training_data_filename)
-  ages = data['Age']
-  data = data[ages > 0]
-  ages = data['Age']
-  heights = data['Height']
-  x_new = np.array(list(range(19))).reshape(19, 1)
-  preds = model.predict(x_new)
+@app.route('/success/<name>')
+def success(name):
+   return 'welcome %s' % name
 
-  fig = px.scatter(x=ages, y=heights, title="Height vs Age of People", labels={'x': 'Age (years)',
-                                                                                'y': 'Height (inches)'})
-
-  fig.add_trace(go.Scatter(x=x_new.reshape(19), y=preds, mode='lines', name='Model'))
-
-  new_preds = model.predict(new_inp_np_arr)
-
-  fig.add_trace(go.Scatter(x=new_inp_np_arr.reshape(len(new_inp_np_arr)), y=new_preds, name='New Outputs', mode='markers', marker=dict(color='purple', size=20, line=dict(color='purple', width=2))))
+@app.route('/login',methods = ['POST', 'GET'])
+def login():
+  if request.method == 'GET':
+    return render_template('login.html')
+  if request.method == 'POST':
+      user = request.form
+     
+      text = user['name']
+      print(text)
+      pred = predict(str(text), model)
+      # return redirect(url_for())
+      print(pred)
+      return str(pred)
   
-  fig.write_image(output_file, width=800, engine='kaleido')
-  fig.show()
+if __name__ == '__main__':
+    
+    model = load_model(checkpoint_dir = './model')
 
-def floats_string_to_np_arr(floats_str):
-  def is_float(s):
-    try:
-      float(s)
-      return True
-    except:
-      return False
-  floats = np.array([float(x) for x in floats_str.split(',') if is_float(x)])
-  return floats.reshape(len(floats), 1)
+    app.run(debug = True, port = 5000)
