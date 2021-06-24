@@ -20,10 +20,8 @@ def predict():
   if request.method == 'GET':
     con = sql.connect("database.db")
     cur = con.cursor()
-    res = cur.execute('''SELECT * FROM reviews_table LIMIT 5;''')
+    res = cur.execute('''SELECT * FROM reviews_table;''')
     reviews = res.fetchall()
-    print(type(reviews))
-    print(reviews)
     return render_template('predict.html',reviews=reviews)
   if request.method == 'POST':
     name_res = request.form['name_res']
