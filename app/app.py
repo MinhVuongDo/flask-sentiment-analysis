@@ -1,34 +1,41 @@
 import numpy as np
 import warnings
-from utils import predict, load_model
-from flask import Flask,jsonify,request,render_template,redirect, url_for
-from model import SentimentAnalysisModel
-warnings.filterwarnings("ignore")
+import sqlite3 as sql
 import tensorflow as tf
+from app.utils import _predict,load_model
+from flask import Flask,jsonify,request,render_template,redirect, url_for
+warnings.filterwarnings("ignore")
+
+
 app = Flask(__name__)
-global model 
+
+global model
+model = load_model(checkpoint_dir = './app/model/')
+if model :
+  print('model loaded')
 
 
-@app.route('/success/<name>')
-def success(name):
-   return 'welcome %s' % name
-
-@app.route('/login',methods = ['POST', 'GET'])
-def login():
+@app.route('/predict',methods = ['POST', 'GET'])
+def predict():
   if request.method == 'GET':
-    return render_template('login.html')
+    con = sql.connect("database.db")
+    cur = con.cursor()
+    res = cur.execute('''SELECT * FROM reviews_table LIMIT 5;''')
+    reviews = res.fetchall()
+    print(type(reviews))
+    print(reviews)
+    return render_template('predict.html',reviews=reviews)
   if request.method == 'POST':
-      user = request.form
-     
-      text = user['name']
-      print(text)
-      pred = predict(str(text), model)
-      # return redirect(url_for())
-      print(pred)
-      return str(pred)
+    name_res = request.form['name_res']
+    name_food = request.form['name_food']
+    review = request.form['review']
+    pred = _predict(str(review), model)
+    with sql.connect("database.db") as con:
+      cur = con.cursor()
+      cur.execute('''INSERT INTO reviews_table (name_res,name_food,review,sentiment) 
+          VALUES (?,?,?,?)''',(name_res,name_food,review,int(pred)) )
+      con.commit()
+      
+    con.close()   
+    return redirect(url_for('predict'))
   
-if __name__ == '__main__':
-    
-    model = load_model(checkpoint_dir = './model')
-
-    app.run(debug = True, port = 5000)

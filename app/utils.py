@@ -1,14 +1,13 @@
 import re
 import numpy as np
 import os
-from model import SentimentAnalysisModel
+from app.hyper import *
 from underthesea import word_tokenize
-from hyper import MAX_SEQ_LENGTH, N_LAYERS, input_shape,LSTM_UNITS,NUM_CLASSES
+from app.model import *
 import tensorflow as tf
 
-data_dir ='./vocab/'
+data_dir ='./app/vocab/'
 words_list = np.load(os.path.join(data_dir, 'words_list.npy')).tolist()
-
 word_vectors = np.float32(np.load(os.path.join(data_dir, 'word_vectors.npy')))
 
 
@@ -43,7 +42,7 @@ def clean_sentences(string):
     return re.sub(strip_special_chars, "", string.lower())
 
 
-def predict(sentence, model, _word_list=words_list, _max_seq_length=MAX_SEQ_LENGTH):
+def _predict(sentence, model, _word_list=words_list, _max_seq_length=MAX_SEQ_LENGTH):
 
     tokenized_sent = word_tokenize(sentence, format='text')
     
