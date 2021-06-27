@@ -36,8 +36,8 @@
 		  </div>
 		</nav>
 	</header>
-	<div class="container p-3  my-3 ">
-		<div class="comment">
+	<div class="row p-3  mt-3 ">
+		<div class="col-8 comment">
 			<table class="table table-bordered">
 				<tr>
 					<th>The name of Restaurant</th>
@@ -49,27 +49,26 @@
 					
 					<tr>
 						
-						<td><p>{{review[1]}}</p></td>
-						<td><p>{{review[2]}}</p></td>
-						<td><p>{{review[3]}}</p></td>
-						{%if review[4]==0 %}
-							<td><i class="bi bi-emoji-frown-fill"></i></td>
-						{% else %}
-							<td><i class="bi bi-emoji-smile"></i></i></td>	
-						{% endif %}
-						
+						<td><p>{{review.name_res}}</p></td>
+						<td><p>{{review.name_food}}</p></td>
+						<td><p>{{review.review}}</p></td>
+						{%if review.sentiment ==1 %}
+							<td><p><i class="bi bi-emoji-smile"></i></p></td>
+						{%else%}
+							<td><p><i class="bi bi-emoji-frown-fill"></i></p></td>
+						{%endif%}
 					</tr>
 				{% endfor %}
 			</table>
 		</div>
-		<div class="container p-3 my-3 border">
+		<div class="col-4 border">
 			<form  action="/predict" method="post">
 			 	<div class="form-group">
 				    <label for="name_res">The name of Restaurants:</label>
 				    <input type="text" class="form-control" placeholder="Restaurants" name="name_res" required>
 			  	</div>
 			  	<div class="form-group">
-				    <label for="name_food">The name of food:</label>
+				    <label for="name_food">The name of foods:</label>
 				    <input type="text" class="form-control" placeholder="Food Name" name="name_food" required>
 			  	</div>
 			  	<div class="form-group">
@@ -80,20 +79,8 @@
 			  	<button type="submit" value = "submit" class="btn btn-primary">Submit</button>
 			</form>
 		</div>
-		
 	</div>
 	
-	
 
-
-	<!-- <form action = "/predict" method = "post">
-		<p>the name of Restaurants</p>
-		<input type="text" name = 'name_res'>
-		<p>the name of food</p>
-		<input type="text" name = 'name_food'>
-        <p>How do you think about this food?</p>
-        <textarea name="review" style="width:600px; height:200px;"></textarea>
-		<p><input type = "submit" value = "submit" /></p>
-    </form> -->
 </body>
 </html>

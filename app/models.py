@@ -1,17 +1,20 @@
+from flask_sqlalchemy import SQLAlchemy
 
-class Review(db.Model):
+db =SQLAlchemy()
+
+class ReviewsModel(db.Model):
+    __tablename__ = "reviews"
+
     id = db.Column(db.Integer, primary_key=True)
-    name_restaurant = db.Column(db.String(255))
-    name_food = db.Column(db.String(255))
+    name_res = db.Column(db.String())
+    name_food = db.Column(db.String())
     review = db.Column(db.String())
-    sentiment = db.Column(db.Integer)
+    sentiment = db.Column(db.Integer())
 
-    def __init__(self,name_restaurant, name_food, review,sentiment):
-        self.name_restaurant = name_restaurant
+    def __init__(self,name_res,name_food,review,sentiment):
+        self.name_res = name_res
         self.name_food = name_food
         self.review = review
-        self.sentiment = category
-        
+        self.sentiment = sentiment
 
-    def __repr__(self):
-        return '<Review %d>' % self.id
+    
