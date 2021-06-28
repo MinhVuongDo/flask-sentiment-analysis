@@ -16,4 +16,4 @@ numpy==1.19.5
 regex==2021.4.4
 requests==2.23.0
 SQLAlchemy==1.4.15
-
+nltk
